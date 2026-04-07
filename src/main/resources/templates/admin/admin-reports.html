@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Xử lý báo cáo - MedCheck Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar: #0f172a;
+            --primary: #3b82f6;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            background: var(--bg);
+        }
+
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar);
+            color: #94a3b8;
+            padding: 2rem 1.5rem;
+            position: fixed;
+        }
+
+        .sidebar h2 {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 3rem;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #94a3b8;
+            padding: 12px 16px;
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar a.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content {
+            margin-left: 280px;
+            padding: 40px;
+            width: 100%;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-pending {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .badge-verified {
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .badge-rejected {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .btn-approve,
+        .btn-reject {
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-approve {
+            background: #22c55e;
+        }
+
+        .btn-reject {
+            background: #ef4444;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            padding: 20px 24px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.8rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .reason-text {
+            font-size: 0.85rem;
+            color: #64748b;
+            max-width: 300px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2><i class="fa-solid fa-virus-slash"></i> MedCheck</h2>
+        <a href="/admin/dashboard"><i class="fa-solid fa-grip"></i> Tổng quan</a>
+        <a href="/admin/medicines"><i class="fa-solid fa-pills"></i> Quản lý thuốc</a>
+        <a href="/admin/categories"><i class="fa-solid fa-layer-group"></i> Danh mục thuốc</a>
+        <a href="/admin/hotlines"><i class="fa-solid fa-phone"></i> Hotlines</a>
+        <a href="/admin/faqs"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+        <a href="/admin/reports" class="active"><i class="fa-solid fa-flag"></i> Duyệt báo cáo</a>
+        <a href="/admin/users"><i class="fa-solid fa-users"></i> Quản lý user</a>
+    </div>
+
+    <div class="content">
+        <h1 style="font-size: 1.5rem; color: #1e293b; margin-bottom: 30px;">Hộp thư báo cáo thuốc giả</h1>
+
+        <div class="report-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nguồn tin</th>
+                        <th>Dược phẩm</th>
+                        <th>Lý do nghi vấn</th>
+                        <th>Trạng thái</th>
+                        <th>Xử lý</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="r : ${reports}">
+                        <td>
+                            <div style="font-weight: 600;" th:text="${r.contactInfo}"></div>
+                            <div style="font-size: 0.78rem; color: #475569;"
+                                th:text="${r.reporterUsername != null ? r.reporterUsername : 'Khách'}"></div>
+                            <div style="font-size: 0.75rem; color: #94a3b8;"
+                                th:text="${#temporals.format(r.reportDate, 'dd/MM/yyyy HH:mm')}"></div>
+                        </td>
+                        <td th:text="${r.medicineName}" style="font-weight: 600; color: var(--primary);"></td>
+                        <td><span class="reason-text" th:text="${r.reason}"></span></td>
+                        <td>
+                            <span th:if="${r.status == 'PENDING'}" class="badge badge-pending">Chờ xử lý</span>
+                            <span th:if="${r.status == 'VERIFIED'}" class="badge badge-verified">Xác nhận giả</span>
+                            <span th:if="${r.status == 'REJECTED'}" class="badge badge-rejected">Từ chối</span>
+                        </td>
+                        <td>
+                            <div th:if="${r.status == 'PENDING'}" style="display: flex; gap: 8px;">
+                                <form th:action="@{/admin/reports/verify/{id}(id=${r.id})}" method="post">
+                                    <button type="submit" class="btn-approve" title="Đánh dấu thuốc giả"><i
+                                            class="fa-solid fa-check"></i></button>
+                                </form>
+                                <form th:action="@{/admin/reports/reject/{id}(id=${r.id})}" method="post">
+                                    <button type="submit" class="btn-reject" title="Bỏ qua báo cáo"><i
+                                            class="fa-solid fa-xmark"></i></button>
+                                </form>
+                            </div>
+                            <div th:unless="${r.status == 'PENDING'}" style="color: #cbd5e1; font-size: 0.8rem;">
+                                Hoàn tất <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký thành viên - MedCheck</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Dùng chung style với login cho đồng bộ */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .reg-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        h2 {
+            color: #059669;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #059669;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reg-card">
+        <h2>Tạo tài khoản mới</h2>
+        <form th:action="@{/register}" th:object="${user}" method="post">
+            <input type="text" th:field="*{username}" placeholder="Tên đăng nhập" required>
+            <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
+                style="color: #ef4444; font-size: 12px; margin-top: -15px; margin-bottom: 15px;"></p>
+            <input type="password" th:field="*{password}" placeholder="Mật khẩu" required>
+            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+                style="color: #ef4444; font-size: 12px; margin-top: -15px; margin-bottom: 15px;"></p>
+            <button type="submit">Đăng ký</button>
+        </form>
+        <p style="text-align: center; margin-top: 20px; font-size: 14px;">
+            Đã có tài khoản? <a href="/login" style="color: #059669; text-decoration: none;">Quay lại đăng nhập</a>
+        </p>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - MedCheck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #09111f;
+            --bg-soft: #101a2d;
+            --panel: rgba(10, 18, 33, 0.82);
+            --panel-border: rgba(148, 163, 184, 0.16);
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-strong: #2563eb;
+            --danger: #f87171;
+            --success: #4ade80;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: "Be Vietnam Pro", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(59, 130, 246, 0.28), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.18), transparent 28%),
+                linear-gradient(135deg, #050a13 0%, #0b1220 48%, #101a2d 100%);
+        }
+
+        .shell {
+            width: 100%;
+            max-width: 980px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            overflow: hidden;
+            border-radius: 28px;
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            background: rgba(7, 12, 24, 0.66);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.38);
+            backdrop-filter: blur(22px);
+        }
+
+        .hero {
+            padding: 56px;
+            background:
+                linear-gradient(160deg, rgba(59, 130, 246, 0.18), rgba(2, 6, 23, 0.05)),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            color: #bfdbfe;
+            background: rgba(59, 130, 246, 0.14);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .hero h1 {
+            margin: 24px 0 14px;
+            font-size: clamp(32px, 4vw, 48px);
+            line-height: 1.05;
+        }
+
+        .hero p {
+            margin: 0;
+            max-width: 470px;
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .hero-points {
+            margin-top: 34px;
+            display: grid;
+            gap: 14px;
+        }
+
+        .hero-point {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #dbeafe;
+            font-size: 14px;
+        }
+
+        .hero-point i {
+            color: #60a5fa;
+        }
+
+        .login-panel {
+            padding: 42px 36px;
+            background: var(--panel);
+            border-left: 1px solid var(--panel-border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 28px;
+            color: #dbeafe;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .brand i {
+            color: #60a5fa;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .message.error {
+            color: #fecaca;
+            background: rgba(127, 29, 29, 0.28);
+            border: 1px solid rgba(248, 113, 113, 0.28);
+        }
+
+        .message.success {
+            color: #dcfce7;
+            background: rgba(20, 83, 45, 0.28);
+            border: 1px solid rgba(74, 222, 128, 0.28);
+        }
+
+        .form {
+            display: grid;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .field {
+            position: relative;
+        }
+
+        .field i {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            transform: translateY(-50%);
+            color: #8ea3bf;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 14px 14px 14px 42px;
+            border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            background: rgba(30, 41, 59, 0.7);
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .field input:focus {
+            border-color: rgba(96, 165, 250, 0.7);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+            background: rgba(30, 41, 59, 0.95);
+        }
+
+        .field input::placeholder {
+            color: #94a3b8;
+        }
+
+        .submit-btn,
+        .google-btn {
+            width: 100%;
+            border: none;
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .submit-btn {
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+            box-shadow: 0 16px 34px rgba(37, 99, 235, 0.28);
+        }
+
+        .submit-btn:hover,
+        .google-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #0f172a;
+            background: #ffffff;
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 18px 0 14px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(148, 163, 184, 0.18);
+        }
+
+        .hint,
+        .register {
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .register {
+            margin-top: 18px;
+        }
+
+        .hint code {
+            padding: 2px 6px;
+            border-radius: 8px;
+            background: rgba(148, 163, 184, 0.12);
+            color: #dbeafe;
+        }
+
+        a.inline-link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 860px) {
+            .shell {
+                grid-template-columns: 1fr;
+                max-width: 540px;
+            }
+
+            .hero {
+                padding: 34px 28px 20px;
+            }
+
+            .login-panel {
+                border-left: none;
+                border-top: 1px solid var(--panel-border);
+            }
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 14px;
+            }
+
+            .hero,
+            .login-panel {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+        <section class="hero">
+            <div class="hero-badge">
+                <i class="fa-solid fa-shield-heart"></i>
+                Hệ thống kiểm tra và cảnh báo thuốc
+            </div>
+            <h1>Đăng nhập để quản lý và xác minh thông tin thuốc của bạn</h1>
+            <p>
+                MedCheck giúp theo dõi thông tin thuốc, xem cảnh báo thuốc giả
+            </p>
+            <div class="hero-points">
+                <div class="hero-point"><i class="fa-solid fa-circle-check"></i> Bạn có thể đăng nhập bằng tài khoản
+                    thông thường hoặc tài khoản Google</div>
+            </div>
+        </section>
+
+        <section class="login-panel">
+            <div class="brand">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>MedCheck</span>
+            </div>
+
+            <div th:if="${param.error}" class="message error">Sai tài khoản hoặc mật khẩu.</div>
+            <div th:if="${param.logout}" class="message success">Đã đăng xuất thành công .</div>
+            <div th:if="${param.success}" class="message success">Đăng ký thành công. Hãy đăng nhập.</div>
+            <div th:if="${param.blocked}" class="message error">Tài khoản đã bị khoá có dấu hiệu spam. Liên hệ admin để
+                được mở khoá.</div>
+            <div th:if="${param.googleConfigMissing}" class="message error">
+                Chưa cấu hình Google Client ID hoac Client Secret trong file <code>application-local.properties</code>.
+            </div>
+
+            <form class="form" th:action="@{/login}" method="post">
+                <div class="field">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" name="username" placeholder="Tên đăng nhập" required>
+                </div>
+                <div class="field">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="password" placeholder="Mật khẩu" required>
+                </div>
+                <button class="submit-btn" type="submit">Đăng nhập</button>
+            </form>
+
+            <div class="divider">hoặc</div>
+
+            <a class="google-btn" th:href="@{/login/google}">
+                <i class="fa-brands fa-google"></i>
+                <span>Đăng nhập với google</span>
+            </a>
+
+            <p class="register">
+                Chưa có tài khoản?
+                <a class="inline-link" href="/register">Đăng ký ngay</a>
+            </p>
+        </section>
+    </div>
+</body>
+
+</html>

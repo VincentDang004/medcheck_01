@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Trung tâm Cảnh báo Thuốc giả</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fef2f2;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .alert-card {
+            background: white;
+            padding: 20px;
+            border-left: 8px solid #dc2626;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #dc2626;
+            text-align: center;
+        }
+
+        .medicine-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #b91c1c;
+        }
+
+        .reason {
+            margin-top: 10px;
+            font-style: italic;
+            color: #444;
+        }
+
+        .date {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 14px;">
+            <a href="/" style="text-decoration:none; color:#2563eb; font-weight:700;">← Trang chủ</a>
+            <a href="/faqs" style="text-decoration:none; color:#2563eb; font-weight:700;">FAQs</a>
+        </div>
+        <h1>⚠️ DANH SÁCH THUỐC GIẢ ĐÃ XÁC MINH</h1>
+        <p style="text-align: center;">Thông tin được tổng hợp từ báo cáo cộng đồng và kiểm duyệt bởi Admin</p>
+
+        <div th:each="r : ${reports}" class="alert-card">
+            <div class="medicine-name" th:text="${r.medicineName}"></div>
+            <div class="reason">
+                <strong>Lý do cảnh báo:</strong> <span th:text="${r.reason}"></span>
+            </div>
+            <div class="date">Trạng thái: Đã xác thực giả mạo</div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/faqs" style="text-decoration: none; color: #2563eb;">Xem FAQs</a>
+        </div>
+    </div>
+</body>
+
+</html>

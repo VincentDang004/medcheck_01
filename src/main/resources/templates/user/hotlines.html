@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Đường dây nóng khẩn cấp - MedCheck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #0284c7; --primary-hover: #0369a1; --bg: #f8fafc; --text: #1e293b; --danger:#ef4444; }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--text); line-height: 1.6; }
+
+        .navbar { background: white; padding: 1rem 10%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .menu { display: flex; align-items: center; gap: 1.5rem; }
+        .menu a { text-decoration: none; color: #64748b; font-weight: 500; font-size: 0.95rem; }
+        .menu a:hover { color: var(--primary); }
+        .btn-auth { border: 1.5px solid var(--primary); padding: 0.5rem 1.2rem; border-radius: 99px; color: var(--primary) !important; }
+        .btn-auth:hover { background: var(--primary); color: white !important; }
+
+        .container { max-width: 1100px; margin: 30px auto 60px; padding: 0 20px; }
+        .hero { background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(2,132,199,0.10)); border: 1px solid #e2e8f0; border-radius: 22px; padding: 26px; }
+        .hero h1 { margin: 0; font-size: 1.8rem; display:flex; align-items:center; gap: 10px; }
+        .hero p { margin: 8px 0 0; color: #64748b; max-width: 760px; }
+        .tip { margin-top: 14px; display:flex; gap: 10px; align-items:flex-start; background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 14px 16px; }
+        .tip i { color: var(--danger); margin-top: 2px; }
+
+        .grid { margin-top: 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+        @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+
+        .card { background: white; border: 1px solid #e2e8f0; border-radius: 18px; padding: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.03); display:flex; flex-direction:column; gap: 10px; }
+        .top { display:flex; justify-content: space-between; gap: 12px; }
+        .name { font-weight: 900; font-size: 1.05rem; }
+        .region { color:#64748b; font-size: 0.85rem; }
+        .desc { color:#334155; font-size: 0.92rem; min-height: 44px; }
+        .actions { display:flex; justify-content: space-between; align-items:center; gap: 12px; margin-top: 6px; }
+        .call { text-decoration:none; background: var(--danger); color: white; padding: 10px 12px; border-radius: 12px; font-weight: 900; display:inline-flex; align-items:center; gap: 10px; }
+        .call:hover { filter: brightness(0.95); transform: translateY(-1px); }
+        .org { color:#64748b; font-size: 0.85rem; }
+        .web { color: var(--primary); text-decoration:none; font-weight: 700; font-size: 0.9rem; }
+
+        .empty { text-align: center; padding: 80px 0; color: #94a3b8; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo"><i class="fa-solid fa-notes-medical"></i> MedCheck</div>
+    <div class="menu">
+        <a href="/">Trang chủ</a>
+        <a href="/categories">Danh mục</a>
+        <a href="/alerts">Cảnh báo</a>
+        <a href="/hotlines" style="color: var(--primary); font-weight: 700;">Đường dây nóng</a>
+        <a href="/faqs">FAQs</a>
+        <a th:if="${#authorization.expression('hasAuthority(''USER'')')}" href="/report-new">Báo cáo thuốc giả</a>
+        <a th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}" href="/admin/dashboard" style="color: #f59e0b;"><i class="fa-solid fa-user-shield"></i> Quản trị</a>
+
+        <span th:if="${#authorization.expression('!isAuthenticated()')}" style="display: flex; gap: 10px;">
+            <a href="/login" class="btn-auth">Đăng nhập</a>
+            <a href="/register" style="color: #64748b; margin-top: 7px;">Đăng ký</a>
+        </span>
+
+        <span th:if="${#authorization.expression('isAuthenticated()')}" style="display:flex; align-items:center; gap:15px;">
+            <span style="font-size: 0.9rem; color: #64748b;">Chào, <b th:text="${#authentication.name}" style="color: var(--text);"></b></span>
+            <a href="/logout" style="color: #ef4444;"><i class="fa-solid fa-power-off"></i></a>
+        </span>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="hero">
+        <h1><i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Đường dây nóng khẩn cấp</h1>
+        <p>Các đầu số quan trọng giúp bạn liên hệ nhanh trong tình huống khẩn cấp. Hãy ưu tiên gọi đúng số phù hợp để được hỗ trợ kịp thời.</p>
+        <div class="tip">
+            <i class="fa-solid fa-shield-heart"></i>
+            <div>
+                <div style="font-weight: 800;">Mẹo an toàn</div>
+                <div style="color:#64748b; font-size: 0.92rem;">Nếu bạn hoặc người xung quanh đang nguy kịch, hãy gọi cấp cứu ngay. Cung cấp vị trí, tình trạng và số điện thoại liên hệ.</div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(hotlines)}" class="empty">
+        <i class="fa-solid fa-phone-slash" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+        <p>Chưa có dữ liệu đường dây nóng.</p>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(hotlines)}" class="grid">
+        <div class="card" th:each="h : ${hotlines}">
+            <div class="top">
+                <div>
+                    <div class="name" th:text="${h.name}">Cấp cứu</div>
+                    <div class="region" th:text="${h.region != null ? h.region : 'Toàn quốc'}">Toàn quốc</div>
+                </div>
+                <div style="font-family: monospace; font-weight: 900; color: var(--danger);" th:text="${h.phone}">115</div>
+            </div>
+            <div class="desc" th:text="${h.description != null ? h.description : ''}"></div>
+            <div class="actions">
+                <a class="call" th:href="${'tel:' + h.phone}">
+                    <i class="fa-solid fa-phone"></i> Gọi ngay
+                </a>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap: 6px;">
+                    <div class="org" th:text="${h.organization != null ? h.organization : ''}"></div>
+                    <a class="web" th:if="${h.websiteUrl != null}" th:href="${h.websiteUrl}" target="_blank" rel="noreferrer">Website</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
