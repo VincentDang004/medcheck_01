@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quản lý người dùng - MedCheck Admin</title>
+
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- Sidebar dùng chung -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('users')}"></aside>
+
+    <!-- Main -->
+    <main class="admin-main">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div>
+                <p class="breadcrumb">Quản trị hệ thống / Người dùng</p>
+                <h1>Quản lý người dùng</h1>
+            </div>
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                Hệ thống hoạt động
+            </div>
+        </header>
+
+        <!-- Content -->
+        <section class="page-content">
+
+            <div class="page-heading">
+                <div>
+                    <h2>Danh sách người dùng</h2>
+                    <p>Quản lý tài khoản, theo dõi báo cáo và kiểm soát hành vi spam.</p>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-responsive">
+
+                    <table class="admin-table user-table">
+
+                        <thead>
+                            <tr>
+                                <th>Người dùng</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Số báo cáo</th>
+                                <th>Spam strike</th>
+                                <th class="text-right">Xử lý</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr th:each="u : ${users}">
+
+                                <!-- User -->
+                                <td>
+                                    <div class="account-info">
+                                        <div class="account-avatar">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+
+                                        <div class="account-details">
+                                            <strong class="account-name"
+                                                    th:text="${u.username}">
+                                            </strong>
+
+                                            <small class="account-meta"
+                                                   th:text="${u.lastReportAt != null
+                                                   ? #temporals.format(u.lastReportAt, 'dd/MM/yyyy HH:mm')
+                                                   : 'Chưa báo cáo'}">
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Role -->
+                                <td>
+                                    <span class="role-badge"
+                                          th:classappend="${u.role == 'ADMIN'} ? ' role-admin' : ' role-user'"
+                                          th:text="${u.role}">
+                                    </span>
+                                </td>
+
+                                <!-- Status -->
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${u.blocked} ? ' blocked' : ' active'"
+                                          th:text="${u.blocked} ? 'Đã khóa' : 'Đang hoạt động'">
+                                    </span>
+                                </td>
+
+                                <!-- Report count -->
+                                <td>
+                                    <span class="user-number"
+                                          th:text="${u.reportCount != null ? u.reportCount : 0}">
+                                    </span>
+                                </td>
+
+                                <!-- Spam strike -->
+                                <td>
+                                    <span class="user-number"
+                                          th:text="${u.spamStrike != null ? u.spamStrike : 0}">
+                                    </span>
+                                </td>
+
+                                <!-- Actions -->
+                                <td>
+                                    <div class="user-actions">
+
+                                        <form th:if="${!u.blocked and u.role != 'ADMIN'}"
+                                              th:action="@{/admin/users/block/{id}(id=${u.id})}"
+                                              method="post">
+
+                                            <button type="submit" class="btn-user-action btn-block">
+                                                <i class="fa-solid fa-lock"></i>
+                                                Khóa
+                                            </button>
+                                        </form>
+
+                                        <form th:if="${u.blocked and u.role != 'ADMIN'}"
+                                              th:action="@{/admin/users/unblock/{id}(id=${u.id})}"
+                                              method="post">
+
+                                            <button type="submit" class="btn-user-action btn-unblock">
+                                                <i class="fa-solid fa-lock-open"></i>
+                                                Mở khóa
+                                            </button>
+                                        </form>
+
+                                        <span th:if="${u.role == 'ADMIN'}"
+                                              class="admin-protected">
+                                            <i class="fa-solid fa-shield-halved"></i>
+                                            Bảo vệ
+                                        </span>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            <!-- Empty state -->
+                            <tr th:if="${#lists.isEmpty(users)}">
+                                <td colspan="6" class="empty-state">
+                                    <i class="fa-solid fa-users"></i>
+                                    <p>Chưa có người dùng nào.</p>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <footer class="admin-footer">
+                <span>MedCheck Admin</span>
+                <span>Quản lý người dùng</span>
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

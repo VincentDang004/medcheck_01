@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hotline - MedCheck Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar: #0f172a;
+            --primary: #3b82f6;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            background: var(--bg);
+        }
+
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar);
+            color: #94a3b8;
+            padding: 2rem 1.5rem;
+            position: fixed;
+        }
+
+        .sidebar h2 {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 3rem;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #94a3b8;
+            padding: 12px 16px;
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar a.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content {
+            margin-left: 280px;
+            padding: 40px;
+            width: 100%;
+        }
+
+        .card {
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+            padding: 28px;
+        }
+
+        h1 {
+            margin: 0 0 18px;
+            color: #1e293b;
+            font-size: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="text"],
+        textarea,
+        select,
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            background: #f8fafc;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+            background: white;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: 800;
+        }
+
+        .btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn.secondary {
+            background: #f1f5f9;
+            color: #334155;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2><i class="fa-solid fa-virus-slash"></i> MedCheck</h2>
+        <a href="/admin/dashboard"><i class="fa-solid fa-grip"></i> Tổng quan</a>
+        <a href="/admin/medicines"><i class="fa-solid fa-pills"></i> Quản lý thuốc</a>
+        <a href="/admin/categories"><i class="fa-solid fa-layer-group"></i> Danh mục thuốc</a>
+        <a href="/admin/hotlines" class="active"><i class="fa-solid fa-phone"></i> Hotlines</a>
+        <a href="/admin/faqs"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+        <a href="/admin/reports"><i class="fa-solid fa-flag"></i> Duyệt báo cáo</a>
+        <a href="/admin/users"><i class="fa-solid fa-users"></i> Quản lý User</a>
+    </div>
+
+    <div class="content">
+        <div class="card">
+            <h1 th:text="${hotline.id == null ? 'Thêm hotline mới' : 'Cập nhật hotline'}"></h1>
+
+            <form th:action="@{/admin/hotlines/save}" th:object="${hotline}" method="post">
+                <input type="hidden" th:field="*{id}">
+
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label><i class="fa-solid fa-tags"></i> Tiêu đề</label>
+                        <input type="text" th:field="*{name}" placeholder="Ví dụ: Cấp cứu y tế" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-phone"></i> Số điện thoại</label>
+                        <input type="text" th:field="*{phone}" placeholder="Ví dụ: 115" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-arrow-up-1-9"></i> Thứ tự hiển thị</label>
+                        <input type="number" th:field="*{displayOrder}" min="0" step="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-building"></i> Don vi</label>
+                        <input type="text" th:field="*{organization}" placeholder="Ví dụ: Trung tâm cấp cứu">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-location-dot"></i> Khu vuc</label>
+                        <input type="text" th:field="*{region}" placeholder="Ví dụ: Toàn quốc / Hà Nội / HCM...">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-globe"></i> Website (neu co)</label>
+                        <input type="text" th:field="*{websiteUrl}" placeholder="https://...">
+                    </div>
+
+                    <div class="form-group full">
+                        <label><i class="fa-solid fa-align-left"></i> Mô tả</label>
+                        <textarea th:field="*{description}"
+                            placeholder="Ghi chú nhanh về trường hợp nên gọi..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-toggle-on"></i> Trạng thái</label>
+                        <select th:field="*{status}">
+                            <option th:value="true">Hiển thị</option>
+                            <option th:value="false">Ẩn</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a class="btn secondary" href="/admin/hotlines"><i class="fa-solid fa-chevron-left"></i>&nbsp;Quay
+                        lại</a>
+                    <button type="submit" class="btn primary"><i class="fa-solid fa-floppy-disk"></i>&nbsp;Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

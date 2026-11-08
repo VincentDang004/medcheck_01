@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${category != null ? category.name : 'Danh mục'} + ' - MedCheck'">Danh mục - MedCheck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #0284c7; --primary-hover: #0369a1; --bg: #f8fafc; --text: #1e293b; }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--text); line-height: 1.6; }
+
+        .navbar { background: white; padding: 1rem 10%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .menu { display: flex; align-items: center; gap: 1.5rem; }
+        .menu a { text-decoration: none; color: #64748b; font-weight: 500; font-size: 0.95rem; }
+        .menu a:hover { color: var(--primary); }
+        .btn-auth { border: 1.5px solid var(--primary); padding: 0.5rem 1.2rem; border-radius: 99px; color: var(--primary) !important; }
+        .btn-auth:hover { background: var(--primary); color: white !important; }
+
+        .container { max-width: 1100px; margin: 30px auto 60px; padding: 0 20px; }
+        .topline { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 12px; }
+        .title { margin: 0; font-size: 1.7rem; }
+        .subtitle { color: #64748b; font-size: 0.95rem; }
+
+        .category-bar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 2px 6px; margin: 10px 0 18px; }
+        .category-bar::-webkit-scrollbar { height: 8px; }
+        .category-bar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 99px; }
+        .cat-pill { white-space: nowrap; text-decoration: none; color: #475569; background: white; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 99px; font-weight: 600; font-size: 0.9rem; }
+        .cat-pill:hover { border-color: #cbd5e1; color: var(--primary); }
+        .cat-pill.active { background: rgba(2, 132, 199, 0.1); border-color: rgba(2, 132, 199, 0.25); color: var(--primary); }
+
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; margin-top: 10px; }
+        .data-table th { padding: 15px; text-align: left; color: #64748b; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .data-table td { background: white; padding: 20px; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
+        .data-table td:first-child { border-left: 1px solid #f1f5f9; border-radius: 16px 0 0 16px; }
+        .data-table td:last-child { border-right: 1px solid #f1f5f9; border-radius: 0 16px 16px 0; }
+        .data-table tr:hover td { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.03); border-color: #e2e8f0; }
+
+        .status-safe { color: #10b981; font-weight: 600; background: #ecfdf5; padding: 5px 12px; border-radius: 8px; }
+        .status-danger { color: #ef4444; font-weight: 600; background: #fef2f2; padding: 5px 12px; border-radius: 8px; }
+        .badge-code { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-weight: 600; }
+        .view-link { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+        .empty { text-align: center; padding: 80px 0; color: #94a3b8; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo"><i class="fa-solid fa-notes-medical"></i> MedCheck</div>
+    <div class="menu">
+        <a href="/">Trang chủ</a>
+        <a href="/categories" style="color: var(--primary); font-weight: 700;">Danh mục</a>
+        <a href="/alerts">Cảnh báo</a>
+        <a href="/hotlines">Đường dây nóng</a>
+        <a href="/faqs">FAQs</a>
+        <a th:if="${#authorization.expression('hasAuthority(''USER'')')}" href="/report-new">Báo cáo thuốc giả</a>
+        <a th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}" href="/admin/dashboard" style="color: #f59e0b;"><i class="fa-solid fa-user-shield"></i> Quản trị</a>
+
+        <span th:if="${#authorization.expression('!isAuthenticated()')}" style="display: flex; gap: 10px;">
+            <a href="/login" class="btn-auth">Đăng nhập</a>
+            <a href="/register" style="color: #64748b; margin-top: 7px;">Đăng ký</a>
+        </span>
+
+        <span th:if="${#authorization.expression('isAuthenticated()')}" style="display:flex; align-items:center; gap:15px;">
+            <span style="font-size: 0.9rem; color: #64748b;">Chào, <b th:text="${#authentication.name}" style="color: var(--text);"></b></span>
+            <a href="/logout" style="color: #ef4444;"><i class="fa-solid fa-power-off"></i></a>
+        </span>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="topline">
+        <div>
+            <h1 class="title" th:text="${category.name}">Danh mục</h1>
+            <div class="subtitle">Chọn danh mục khác để lọc thuốc.</div>
+        </div>
+        <a href="/categories" style="text-decoration:none; color:#64748b; font-weight:600;"><i class="fa-solid fa-layer-group"></i> Tất cả danh mục</a>
+    </div>
+
+    <div class="category-bar" th:if="${!#lists.isEmpty(navCategories)}">
+        <a class="cat-pill" href="/" th:classappend="${selectedCategoryId == null} ? ' active' : ''">Tất cả</a>
+        <a th:each="c : ${navCategories}"
+           class="cat-pill"
+           th:href="@{/categories/{id}(id=${c.id})}"
+           th:text="${c.name}"
+           th:classappend="${selectedCategoryId != null && selectedCategoryId == c.id} ? ' active' : ''">Danh mục</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(medicines)}" class="empty">
+        <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+        <p>Danh mục này chưa có thuốc nào.</p>
+    </div>
+
+    <table th:if="${!#lists.isEmpty(medicines)}" class="data-table">
+        <thead>
+        <tr>
+            <th>Thông tin thuốc</th>
+            <th>Mã số</th>
+            <th>Trạng thái kiểm định</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="m : ${medicines}">
+            <td>
+                <div style="font-weight: 700; font-size: 1.05rem;" th:text="${m.name}"></div>
+                <span th:if="${m.riskLevel != null}" style="color: #f59e0b; font-size: 0.85rem;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Cảnh báo rủi ro
+                </span>
+            </td>
+            <td><span class="badge-code" th:text="${m.code}"></span></td>
+            <td>
+                <span th:if="${m.recalled}" class="status-danger"><i class="fa-solid fa-xmark"></i> Thuốc giả/Thu hồi</span>
+                <span th:if="${!m.recalled}" class="status-safe"><i class="fa-solid fa-check"></i> An toàn sử dụng</span>
+            </td>
+            <td>
+                <a class="view-link" th:href="@{/medicine/{id}(id=${m.id})}">Chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

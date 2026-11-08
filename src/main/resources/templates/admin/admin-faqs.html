@@ -1,0 +1,169 @@
+html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý FAQs - MedCheck Admin</title>
+
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- Sidebar dùng chung -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('faqs')}"></aside>
+
+    <main class="admin-main">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div>
+                <p class="breadcrumb">Quản trị / Nội dung</p>
+                <h1>Quản lý FAQs</h1>
+            </div>
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                Hệ thống hoạt động
+            </div>
+        </header>
+
+        <!-- Nội dung -->
+        <section class="page-content">
+
+            <div class="page-heading">
+                <div>
+                    <h2>Danh sách câu hỏi thường gặp</h2>
+                    <p>Quản lý các câu hỏi và câu trả lời hiển thị trên MedCheck.</p>
+                </div>
+
+                <a th:href="@{/admin/faqs/add}" class="btn-add">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm FAQ
+                </a>
+            </div>
+
+            <div class="table-card">
+                <div class="table-responsive">
+
+                    <table class="admin-table faq-table">
+
+                        <thead>
+                            <tr>
+                                <th>Thứ tự</th>
+                                <th>Nội dung câu hỏi</th>
+                                <th>Trạng thái</th>
+                                <th class="text-right">Công cụ</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr th:each="f : ${faqs}">
+
+                                <td class="table-id"
+                                    th:text="${f.displayOrder}">
+                                </td>
+
+                                <td>
+                                    <div class="faq-question"
+                                         th:text="${f.question}">
+                                    </div>
+
+                                    <p class="faq-answer"
+                                       th:text="${f.answer}">
+                                    </p>
+                                </td>
+
+                                <td>
+                                    <span th:if="${f.status}"
+                                          class="badge active">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        HIỂN THỊ
+                                    </span>
+
+                                    <span th:unless="${f.status}"
+                                          class="badge inactive">
+                                        <i class="fa-solid fa-eye-slash"></i>
+                                        ĐANG ẨN
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="action-group">
+
+                                        <!-- Chỉnh sửa -->
+                                        <a th:href="@{/admin/faqs/edit/{id}(id=${f.id})}"
+                                           class="btn-action btn-edit"
+                                           title="Chỉnh sửa">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+
+                                        <!-- Ẩn / Hiển thị -->
+                                        <form th:action="@{/admin/faqs/toggle/{id}(id=${f.id})}"
+                                              method="post"
+                                              class="action-form">
+
+                                            <button type="submit"
+                                                    class="btn-action btn-toggle"
+                                                    th:title="${f.status} ? 'Ẩn FAQ' : 'Hiển thị FAQ'">
+
+                                                <i class="fa-solid"
+                                                   th:classappend="${f.status} ? ' fa-toggle-on' : ' fa-toggle-off'">
+                                                </i>
+                                            </button>
+                                        </form>
+
+                                        <!-- Xóa / Ẩn FAQ -->
+                                        <form th:action="@{/admin/faqs/delete/{id}(id=${f.id})}"
+                                              method="post"
+                                              class="action-form">
+
+                                            <button type="submit"
+                                                    class="btn-action btn-delete"
+                                                    onclick="return confirm('Bạn có chắc muốn ẩn FAQ này?')"
+                                                    title="Ẩn FAQ">
+
+                                                <i class="fa-solid fa-eye-slash"></i>
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            <!-- Không có dữ liệu -->
+                            <tr th:if="${#lists.isEmpty(faqs)}">
+                                <td colspan="4" class="empty-state">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                    <p>Chưa có câu hỏi thường gặp nào.</p>
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+
+            <footer class="admin-footer">
+                <span>© 2026 MedCheck Admin</span>
+                <span>Hệ thống quản lý thông tin thuốc</span>
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+html
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quản lý thuốc | MedCheck Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- Sidebar dùng chung -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('medicines')}"></aside>
+
+    <main class="admin-main">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div>
+                <p class="breadcrumb">
+                    Quản trị hệ thống / Quản lý dữ liệu / Thuốc
+                </p>
+                <h1>Quản lý thuốc</h1>
+            </div>
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                Hệ thống quản trị
+            </div>
+        </header>
+
+        <div class="page-content">
+
+            <!-- Page heading -->
+            <section class="page-heading">
+                <div>
+                    <h2>Kho dữ liệu dược phẩm</h2>
+                    <p>Quản lý thông tin và dữ liệu các loại thuốc trong hệ thống.</p>
+                </div>
+
+                <a href="/admin/medicines/add" class="btn-add">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm dược phẩm
+                </a>
+            </section>
+
+            <!-- Medicine table -->
+            <section class="table-card">
+
+                <div class="table-responsive">
+                    <table class="admin-table">
+
+                        <thead>
+                            <tr>
+                                <th style="width: 150px;">Mã hệ thống</th>
+                                <th>Thông tin thuốc</th>
+                                <th style="width: 130px; text-align: right;">Công cụ</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <!-- Empty state -->
+                            <tr th:if="${#lists.isEmpty(medicines)}">
+                                <td colspan="3" class="empty-state">
+                                    <i class="fa-solid fa-pills"></i>
+                                    Chưa có dữ liệu thuốc.
+                                </td>
+                            </tr>
+
+                            <!-- Medicine rows -->
+                            <tr th:each="m : ${medicines}">
+
+                                <td class="table-id"
+                                    th:text="${'#MED-' + m.id}">
+                                    #MED-1
+                                </td>
+
+                                <td>
+                                    <div class="medicine-info">
+
+                                        <img class="medicine-thumb"
+                                             th:src="${m.imageUrl != null and !#strings.isEmpty(m.imageUrl)
+                                                ? m.imageUrl
+                                                : 'https://placehold.co/88x88/png?text=MED'}"
+                                             th:alt="${m.name}"
+                                             onerror="this.onerror=null;this.src='https://placehold.co/88x88/png?text=MED'">
+
+                                        <div class="medicine-details">
+
+                                            <div class="medicine-name"
+                                                 th:text="${m.name}">
+                                                Tên thuốc
+                                            </div>
+
+                                            <div class="medicine-code"
+                                                 th:text="${m.code != null and !#strings.isEmpty(m.code)
+                                                    ? 'Mã thuốc: ' + m.code
+                                                    : 'Chưa có mã thuốc'}">
+                                                Mã thuốc
+                                            </div>
+
+                                            <div class="medicine-manufacturer"
+                                                 th:if="${m.manufacturer != null}"
+                                                 th:text="${m.manufacturer}">
+                                                Nhà sản xuất
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="action-group">
+
+                                        <!-- Edit -->
+                                        <a th:href="@{/admin/medicines/edit/{id}(id=${m.id})}"
+                                           class="btn-action btn-edit"
+                                           title="Chỉnh sửa">
+
+                                            <i class="fa-solid fa-pen"></i>
+
+                                        </a>
+
+                                        <!-- Delete -->
+                                        <form th:action="@{/admin/medicines/delete/{id}(id=${m.id})}"
+                                              method="post"
+                                              class="action-form"
+                                              onsubmit="return confirm('Bạn có chắc muốn xóa dữ liệu thuốc này?')">
+
+                                            <button type="submit"
+                                                    class="btn-action btn-delete"
+                                                    title="Xóa thuốc">
+
+                                                <i class="fa-solid fa-trash-can"></i>
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </section>
+
+            <!-- Footer -->
+            <footer class="admin-footer">
+                <span>MedCheck Administration</span>
+                <span>© 2026 MedCheck. All rights reserved.</span>
+            </footer>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

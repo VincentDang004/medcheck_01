@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tổng quan | MedCheck Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('dashboard')}"></aside>
+
+    <main class="admin-main">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div>
+                <p class="breadcrumb">Quản trị hệ thống / Tổng quan</p>
+                <h1>Dashboard</h1>
+            </div>
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                Hệ thống quản trị
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+
+            <!-- Welcome -->
+            <section class="welcome-card">
+
+                <div class="welcome-content">
+                    <span class="welcome-label">
+                        MEDCHECK ADMINISTRATION
+                    </span>
+
+                    <h2>Chào mừng trở lại!</h2>
+
+                    <p>
+                        Quản lý thông tin thuốc, danh mục và kiểm duyệt
+                        các báo cáo từ người dùng trên hệ thống.
+                    </p>
+
+                    <a href="/admin/reports" class="primary-button">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        Kiểm tra báo cáo
+                    </a>
+                </div>
+
+                <div class="welcome-illustration">
+                    <i class="fa-solid fa-shield-heart"></i>
+                </div>
+
+            </section>
+
+            <!-- Statistics -->
+            <section class="section-block">
+
+                <div class="section-heading">
+                    <h2>Tổng quan hệ thống</h2>
+                    <p>Các số liệu quản lý hiện tại</p>
+                </div>
+
+                <div class="stats-grid">
+
+                    <!-- Total medicines -->
+                    <article class="stat-card">
+
+                        <div class="stat-icon blue">
+                            <i class="fa-solid fa-capsules"></i>
+                        </div>
+
+                        <p class="stat-label">Tổng số thuốc</p>
+
+                        <h3 class="stat-value"
+                            th:text="${totalMedicines}">0</h3>
+
+                        <span class="stat-description">
+                            Thuốc trong hệ thống
+                        </span>
+
+                    </article>
+
+                    <!-- Active medicines -->
+                    <article class="stat-card">
+
+                        <div class="stat-icon green">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+
+                        <p class="stat-label">Thuốc đang hoạt động</p>
+
+                        <h3 class="stat-value"
+                            th:text="${activeMedicines}">0</h3>
+
+                        <span class="stat-description">
+                            Thuốc đang được hiển thị
+                        </span>
+
+                    </article>
+
+                    <!-- Pending reports -->
+                    <article class="stat-card">
+
+                        <div class="stat-icon orange">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+
+                        <p class="stat-label">Chờ phê duyệt</p>
+
+                        <h3 class="stat-value"
+                            th:text="${pendingReports}">0</h3>
+
+                        <a href="/admin/reports" class="stat-link">
+                            Xem báo cáo
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+                    </article>
+
+                    <!-- Verified reports -->
+                    <article class="stat-card">
+
+                        <div class="stat-icon purple">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+
+                        <p class="stat-label">Đã xác nhận giả</p>
+
+                        <h3 class="stat-value"
+                            th:text="${verifiedFake}">0</h3>
+
+                        <span class="stat-description">
+                            Báo cáo đã xác minh
+                        </span>
+
+                    </article>
+
+                    <!-- Rejected reports -->
+                    <article class="stat-card">
+
+                        <div class="stat-icon red">
+                            <i class="fa-solid fa-ban"></i>
+                        </div>
+
+                        <p class="stat-label">Báo cáo bị từ chối</p>
+
+                        <h3 class="stat-value"
+                            th:text="${rejectedReports}">0</h3>
+
+                        <span class="stat-description">
+                            Yêu cầu không được chấp nhận
+                        </span>
+
+                    </article>
+
+                    <!-- Blocked users -->
+                    <article class="stat-card">
+
+                        <div class="stat-icon orange">
+                            <i class="fa-solid fa-user-lock"></i>
+                        </div>
+
+                        <p class="stat-label">Người dùng bị khóa</p>
+
+                        <h3 class="stat-value"
+                            th:text="${blockedUsers}">0</h3>
+
+                        <a href="/admin/users" class="stat-link">
+                            Quản lý người dùng
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+            <!-- Quick access -->
+            <section class="section-block">
+
+                <div class="section-heading">
+                    <h2>Truy cập nhanh</h2>
+                    <p>Các chức năng quản trị thường dùng</p>
+                </div>
+
+                <div class="quick-grid">
+
+                    <a href="/admin/medicines" class="quick-card">
+
+                        <div class="quick-icon blue">
+                            <i class="fa-solid fa-pills"></i>
+                        </div>
+
+                        <div>
+                            <h3>Quản lý thuốc</h3>
+                            <p>Thêm, sửa và cập nhật thông tin thuốc.</p>
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right quick-arrow"></i>
+
+                    </a>
+
+                    <a href="/admin/categories" class="quick-card">
+
+                        <div class="quick-icon purple">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+
+                        <div>
+                            <h3>Danh mục thuốc</h3>
+                            <p>Quản lý và phân loại thuốc.</p>
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right quick-arrow"></i>
+
+                    </a>
+
+                    <a href="/admin/reports" class="quick-card">
+
+                        <div class="quick-icon orange">
+                            <i class="fa-solid fa-flag"></i>
+                        </div>
+
+                        <div>
+                            <h3>Duyệt báo cáo</h3>
+                            <p>Kiểm tra và xử lý báo cáo từ người dùng.</p>
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right quick-arrow"></i>
+
+                    </a>
+
+                    <a href="/admin/hotlines" class="quick-card">
+
+                        <div class="quick-icon green">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+
+                        <div>
+                            <h3>Hotlines</h3>
+                            <p>Cập nhật thông tin liên hệ hỗ trợ.</p>
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right quick-arrow"></i>
+
+                    </a>
+
+                </div>
+
+            </section>
+
+            <!-- Footer -->
+            <footer class="admin-footer">
+                <span>MedCheck Administration</span>
+                <span>© 2026 MedCheck. All rights reserved.</span>
+            </footer>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

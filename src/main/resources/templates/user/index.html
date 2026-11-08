@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="MedCheck hỗ trợ tra cứu thông tin thuốc và cập nhật cảnh báo dược phẩm.">
+
+    <title>MedCheck - Tra cứu thông tin thuốc</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/user.css}">
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+    <div class="header-container">
+
+        <a href="/" class="brand">
+            <span class="brand-icon">
+                <i class="fa-solid fa-shield-heart"></i>
+            </span>
+            <span>Med<span>Check</span></span>
+        </a>
+
+        <nav class="main-nav">
+            <a href="/" class="nav-link active">Trang chủ</a>
+            <a href="/alerts" class="nav-link">Cảnh báo</a>
+            <a href="/hotlines" class="nav-link">Đường dây nóng</a>
+            <a href="/faqs" class="nav-link">Hỏi đáp</a>
+
+            <a sec:authorize="hasAuthority('USER')"
+               href="/report-new" class="nav-link">
+                Báo cáo thuốc giả
+            </a>
+
+            <a sec:authorize="hasAuthority('ADMIN')"
+               href="/admin/dashboard" class="nav-link admin-link">
+                <i class="fa-solid fa-user-shield"></i>
+                Quản trị
+            </a>
+        </nav>
+
+        <div class="header-actions">
+
+            <div sec:authorize="!isAuthenticated()" class="guest-actions">
+                <a href="/login" class="login-link">Đăng nhập</a>
+                <a href="/register" class="register-button">Đăng ký</a>
+            </div>
+
+            <div sec:authorize="isAuthenticated()" class="user-actions">
+                <span class="user-greeting">
+                    <i class="fa-regular fa-circle-user"></i>
+                    <span th:text="${#authentication.name}">Người dùng</span>
+                </span>
+
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="logout-button" title="Đăng xuất">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+
+<main>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-background"></div>
+
+        <div class="hero-container">
+
+            <div class="hero-content">
+                <span class="hero-label">
+                    <i class="fa-solid fa-shield-heart"></i>
+                    Nền tảng thông tin dược phẩm
+                </span>
+
+                <h1>
+                    Chủ động kiểm tra thuốc.<br>
+                    <span>Bảo vệ sức khỏe cộng đồng.</span>
+                </h1>
+
+                <p>
+                    Tra cứu thông tin thuốc, theo dõi cảnh báo dược phẩm
+                    và cùng cộng đồng phát hiện những dấu hiệu bất thường.
+                </p>
+
+                <div class="hero-features">
+                    <span>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        Tra cứu thông tin
+                    </span>
+                    <span>
+                        <i class="fa-solid fa-bell"></i>
+                        Cập nhật cảnh báo
+                    </span>
+                    <span>
+                        <i class="fa-solid fa-users"></i>
+                        Vì cộng đồng
+                    </span>
+                </div>
+            </div>
+
+            <div class="hero-decoration">
+                <div class="hero-shield">
+                    <i class="fa-solid fa-shield-heart"></i>
+                </div>
+                <div class="decoration-circle circle-one"></div>
+                <div class="decoration-circle circle-two"></div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- SEARCH -->
+    <section class="search-section">
+        <div class="search-card">
+
+            <div class="search-heading">
+                <span class="section-eyebrow">TRA CỨU DƯỢC PHẨM</span>
+                <h2>Bạn đang muốn tìm loại thuốc nào?</h2>
+                <p>Nhập tên thuốc hoặc mã thuốc để tìm kiếm thông tin.</p>
+            </div>
+
+            <form action="/search" method="get" class="search-form">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input
+                        type="text"
+                        name="keyword"
+                        placeholder="Ví dụ: Hapacol 500..."
+                        aria-label="Nhập tên thuốc hoặc mã thuốc"
+                        required>
+                </div>
+
+                <button type="submit" class="search-button">
+                    Tra cứu
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+
+        </div>
+    </section>
+
+
+    <!-- CATEGORIES -->
+    <section class="content-section category-section"
+             th:if="${!#lists.isEmpty(navCategories)}">
+
+        <div class="section-heading">
+            <div>
+                <span class="section-eyebrow">KHÁM PHÁ</span>
+                <h2>Danh mục thuốc</h2>
+                <p>Tìm kiếm thuốc theo từng nhóm dược phẩm.</p>
+            </div>
+
+            <a href="/categories" class="text-link">
+                Xem tất cả
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="category-list">
+            <a href="/" class="category-item category-all">
+                <span class="category-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                </span>
+                <span>Tất cả thuốc</span>
+            </a>
+
+            <a th:each="c : ${navCategories}"
+               class="category-item"
+               th:href="@{/categories/{id}(id=${c.id})}">
+
+                <span class="category-icon">
+                    <i class="fa-solid fa-capsules"></i>
+                </span>
+
+                <span th:text="${c.name}">Danh mục thuốc</span>
+            </a>
+        </div>
+    </section>
+
+
+    <!-- MEDICINES -->
+    <section class="content-section medicine-section">
+
+        <div class="section-heading">
+            <div>
+                <span class="section-eyebrow">DỮ LIỆU DƯỢC PHẨM</span>
+                <h2>Danh sách thuốc</h2>
+                <p>Thông tin các sản phẩm hiện có trong hệ thống MedCheck.</p>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(medicines)}" class="empty-state">
+            <div class="empty-icon">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3>Chưa có dữ liệu thuốc</h3>
+            <p>Hiện tại chưa tìm thấy thông tin thuốc phù hợp.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(medicines)}" class="medicine-grid">
+
+            <article class="medicine-card" th:each="m : ${medicines}">
+
+                <div class="medicine-card-top">
+
+                    <div class="medicine-image">
+                        <img
+                            th:src="${m.imageUrl != null and !#strings.isEmpty(m.imageUrl)
+                                ? m.imageUrl
+                                : 'https://placehold.co/160x160/f1f5f9/64748b?text=Medicine'}"
+                            th:alt="${m.name}"
+                            onerror="this.src='https://placehold.co/160x160/f1f5f9/64748b?text=Medicine'">
+                    </div>
+
+                    <span class="medicine-status status-warning"
+                          th:if="${m.recalled}">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Có cảnh báo
+                    </span>
+
+                    <span class="medicine-status status-normal"
+                          th:unless="${m.recalled}">
+                        <i class="fa-solid fa-circle-check"></i>
+                        Chưa có cảnh báo thu hồi
+                    </span>
+
+                </div>
+
+                <div class="medicine-info">
+
+                    <h3 th:text="${m.name}">Tên thuốc</h3>
+
+                    <p class="medicine-code">
+                        Mã thuốc:
+                        <strong th:text="${m.code != null and !#strings.isEmpty(m.code)
+                            ? m.code : 'Chưa cập nhật'}">
+                            Chưa cập nhật
+                        </strong>
+                    </p>
+
+                    <p class="medicine-manufacturer"
+                       th:if="${m.manufacturer != null and !#strings.isEmpty(m.manufacturer)}">
+                        <i class="fa-solid fa-industry"></i>
+                        <span th:text="${m.manufacturer}">Nhà sản xuất</span>
+                    </p>
+
+                    <p class="risk-note"
+                       th:if="${m.riskLevel != null and !#strings.isEmpty(m.riskLevel)}">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        Có thông tin cảnh báo cần lưu ý
+                    </p>
+
+                </div>
+
+                <a class="medicine-detail"
+                   th:href="@{/medicine/{id}(id=${m.id})}">
+                    Xem thông tin thuốc
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- INFORMATION NOTE -->
+    <section class="notice-section">
+        <div class="notice-icon">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+
+        <div>
+            <h3>Lưu ý khi tra cứu thông tin thuốc</h3>
+            <p>
+                MedCheck hỗ trợ tra cứu và tiếp nhận thông tin cảnh báo.
+                Kết quả hiển thị không thay thế việc kiểm tra nguồn gốc,
+                hướng dẫn sử dụng hoặc tư vấn từ bác sĩ, dược sĩ.
+            </p>
+        </div>
+    </section>
+
+</main>
+
+
+<!-- FOOTER -->
+<footer class="site-footer">
+
+    <div class="footer-container">
+
+        <div class="footer-brand">
+            <a href="/" class="brand footer-logo">
+                <span class="brand-icon">
+                    <i class="fa-solid fa-shield-heart"></i>
+                </span>
+                <span>Med<span>Check</span></span>
+            </a>
+
+            <p>
+                Đồng hành cùng cộng đồng trong việc tra cứu thông tin
+                và nhận diện các cảnh báo liên quan đến dược phẩm.
+            </p>
+        </div>
+
+        <div class="footer-links">
+            <h4>Khám phá</h4>
+            <a href="/">Trang chủ</a>
+            <a href="/alerts">Cảnh báo thuốc</a>
+            <a href="/categories">Danh mục thuốc</a>
+        </div>
+
+        <div class="footer-links">
+            <h4>Hỗ trợ</h4>
+            <a href="/hotlines">Đường dây nóng</a>
+            <a href="/faqs">Câu hỏi thường gặp</a>
+            <a href="/report-new">Báo cáo thuốc giả</a>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        <span>© 2026 MedCheck. All rights reserved.</span>
+        <span>Vì sức khỏe cộng đồng.</span>
+    </div>
+
+</footer>
+
+</body>
+</html>

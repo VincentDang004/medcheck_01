@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết thuốc</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7fb; margin: 0; }
+        .container { width: 60%; margin: auto; margin-top: 60px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+        h1 { text-align: center; margin-bottom: 25px; }
+        .info { margin-bottom: 12px; font-size: 16px; }
+        .warning { color: #dc2626; font-weight: bold; }
+        .recall { color: #b91c1c; font-weight: bold; margin-top: 10px; }
+        .back, .report-btn { display: inline-block; margin-top: 20px; padding: 10px 16px; color: white; text-decoration: none; border-radius: 8px; }
+        .back { background: #2563eb; }
+        .back:hover { background: #1d4ed8; }
+        .report-btn { background: #dc2626; margin-left: 10px; }
+        .report-btn:hover { background: #b91c1c; }
+    </style>
+</head>
+
+<body>
+    <div style="background:white; padding: 14px 0; border-bottom: 1px solid #e5e7eb;">
+        <div style="width: 60%; margin: auto; display:flex; justify-content: space-between; align-items:center;">
+            <a href="/" style="text-decoration:none; color:#2563eb; font-weight:700;">← Trang chủ</a>
+            <a href="/faqs" style="text-decoration:none; color:#2563eb; font-weight:700;">FAQs</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h1>Thông tin thuốc</h1>
+            <div style="text-align:center; margin-bottom: 18px;">
+                <img th:src="${medicine.imageUrl != null ? medicine.imageUrl : 'https://placehold.co/420x260/png?text=MED'}"
+                     alt="medicine"
+                     style="max-width: 100%; height: auto; border-radius: 14px; border: 1px solid #e5e7eb;">
+            </div>
+
+            <p class="info"><b>Tên thuốc:</b> <span th:text="${medicine.name}"></span></p>
+            <p class="info"><b>Mã thuốc:</b> <span th:text="${medicine.code}"></span></p>
+            <p class="info"><b>Nhà sản xuất:</b> <span th:text="${medicine.manufacturer}"></span></p>
+            <p class="info"><b>Quốc gia:</b> <span th:text="${medicine.origin}"></span></p>
+            <p class="info"><b>Công dụng:</b> <span th:text="${medicine.usage}"></span></p>
+            <p class="info"><b>Độ tuổi sử dụng:</b> <span th:text="${medicine.ageLimit}"></span></p>
+            <p class="info warning"><span>Cảnh báo:</span> <span th:text="${medicine.riskLevel}"></span></p>
+
+            <p th:if="${medicine.recalled}" class="recall">Thuốc này đã bị thu hồi</p>
+
+            <a href="/" class="back">Quay lại danh sách</a>
+            <a th:href="@{/report-new(medicineId=${medicine.id})}" class="report-btn">Báo cáo thuốc giả</a>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý thuốc - MedCheck</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background: white;
+            padding: 45px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+        }
+
+        h2 {
+            color: #111827;
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 1.75rem;
+            font-weight: 800;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        label i {
+            color: var(--primary);
+            width: 16px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #f3f4f6;
+            border-radius: 14px;
+            box-sizing: border-box;
+            transition: 0.3s;
+            background: #f9fafb;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-save:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-back {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .btn-back:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 18px;">
+            <a href="/admin/medicines" style="text-decoration:none; color:#64748b; font-weight:700;"><i class="fa-solid fa-chevron-left"></i> Back</a>
+            <a href="/admin/faqs" style="text-decoration:none; color:#3b82f6; font-weight:700;"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+        </div>
+        <h2 th:text="${medicine.id == null ? 'Thêm thuốc mới' : 'Cập nhật dữ liệu'}"></h2>
+
+        <form th:action="@{/admin/medicines/save}" th:object="${medicine}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-pills"></i> Tên biệt dược</label>
+                <input type="text" th:field="*{name}" placeholder="Nhập tên thuốc..." required>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-barcode"></i> Mã định danh (SKU)</label>
+                <input type="text" th:field="*{code}" placeholder="Ví dụ: MC-9901" required>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-industry"></i> Đơn vị sản xuất</label>
+                <input type="text" th:field="*{manufacturer}" placeholder="Tên công ty dược phẩm...">
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-layer-group"></i> Danh mục</label>
+                <select th:field="*{category.id}" style="width:100%; padding:14px 18px; border: 2px solid #f3f4f6; border-radius: 14px; background:#f9fafb; font-size: 1rem;">
+                    <option value="">-- Chọn danh mục --</option>
+                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-regular fa-image"></i> Ảnh (URL)</label>
+                <input type="text" th:field="*{imageUrl}" placeholder="https://...">
+            </div>
+
+            <button type="submit" class="btn-save">
+                <i class="fa-solid fa-cloud-arrow-up"></i> LƯU DỮ LIỆU
+            </button>
+        </form>
+
+        <a href="/admin/medicines" class="btn-back">
+            <i class="fa-solid fa-chevron-left"></i> Quay lại danh sách quản lý
+        </a>
+    </div>
+</body>
+
+</html>

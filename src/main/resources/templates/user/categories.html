@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh mục thuốc - MedCheck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #0284c7; --primary-hover: #0369a1; --bg: #f8fafc; --text: #1e293b; }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--text); line-height: 1.6; }
+
+        .navbar { background: white; padding: 1rem 10%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .menu { display: flex; align-items: center; gap: 1.5rem; }
+        .menu a { text-decoration: none; color: #64748b; font-weight: 500; font-size: 0.95rem; }
+        .menu a:hover { color: var(--primary); }
+        .btn-auth { border: 1.5px solid var(--primary); padding: 0.5rem 1.2rem; border-radius: 99px; color: var(--primary) !important; }
+        .btn-auth:hover { background: var(--primary); color: white !important; }
+
+        .container { max-width: 1100px; margin: 30px auto 60px; padding: 0 20px; }
+        .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+        .header h1 { margin: 0; font-size: 1.7rem; }
+        .hint { color: #64748b; font-size: 0.95rem; }
+
+        .cat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+        @media (max-width: 900px) { .cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 520px) { .cat-grid { grid-template-columns: 1fr; } }
+
+        .cat-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px; text-decoration: none; color: inherit; box-shadow: 0 8px 20px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; }
+        .cat-card:hover { transform: translateY(-2px); border-color: #cbd5e1; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
+        .cat-name { font-weight: 700; }
+        .cat-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #eff6ff; color: #2563eb; }
+
+        .empty { text-align: center; padding: 80px 0; color: #94a3b8; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo"><i class="fa-solid fa-notes-medical"></i> MedCheck</div>
+    <div class="menu">
+        <a href="/">Trang chủ</a>
+        <a href="/categories" style="color: var(--primary); font-weight: 700;">Danh mục</a>
+        <a href="/alerts">Cảnh báo</a>
+        <a href="/hotlines">Đường dây nóng</a>
+        <a href="/faqs">FAQs</a>
+        <a th:if="${#authorization.expression('hasAuthority(''USER'')')}" href="/report-new">Báo cáo thuốc giả</a>
+        <a th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}" href="/admin/dashboard" style="color: #f59e0b;"><i class="fa-solid fa-user-shield"></i> Quản trị</a>
+
+        <span th:if="${#authorization.expression('!isAuthenticated()')}" style="display: flex; gap: 10px;">
+            <a href="/login" class="btn-auth">Đăng nhập</a>
+            <a href="/register" style="color: #64748b; margin-top: 7px;">Đăng ký</a>
+        </span>
+
+        <span th:if="${#authorization.expression('isAuthenticated()')}" style="display:flex; align-items:center; gap:15px;">
+            <span style="font-size: 0.9rem; color: #64748b;">Chào, <b th:text="${#authentication.name}" style="color: var(--text);"></b></span>
+            <a href="/logout" style="color: #ef4444;"><i class="fa-solid fa-power-off"></i></a>
+        </span>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="header">
+        <div>
+            <h1>Danh mục thuốc</h1>
+            <div class="hint">Nhấn vào danh mục để xem danh sách thuốc tương ứng.</div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(categories)}" class="empty">
+        <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+        <p>Chưa có danh mục nào.</p>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(categories)}" class="cat-grid">
+        <a th:each="c : ${categories}" class="cat-card" th:href="@{/categories/{id}(id=${c.id})}">
+            <div class="cat-name" th:text="${c.name}">Danh mục</div>
+            <div class="cat-icon"><i class="fa-solid fa-layer-group"></i></div>
+        </a>
+    </div>
+</div>
+</body>
+</html>

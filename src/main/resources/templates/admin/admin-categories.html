@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Danh mục thuốc | MedCheck Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('categories')}"></aside>
+
+    <main class="admin-main">
+
+        <!-- Topbar -->
+        <header class="topbar">
+
+            <div>
+                <p class="breadcrumb">
+                    Quản trị hệ thống / Quản lý dữ liệu / Danh mục
+                </p>
+
+                <h1>Danh mục thuốc</h1>
+            </div>
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                Hệ thống quản trị
+            </div>
+
+        </header>
+
+        <div class="page-content">
+
+            <!-- Page heading -->
+            <section class="page-heading">
+
+                <div>
+                    <h2>Quản lý danh mục thuốc</h2>
+
+                    <p>
+                        Theo dõi, phân loại và quản lý các danh mục thuốc.
+                    </p>
+                </div>
+
+                <a href="/admin/categories/add" class="btn-add">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm danh mục
+                </a>
+
+            </section>
+
+            <!-- Category table -->
+            <section class="table-card">
+
+                <div class="table-responsive">
+
+                    <table class="admin-table">
+
+                        <thead>
+                            <tr>
+                                <th style="width: 90px;">ID</th>
+                                <th>Danh mục</th>
+                                <th style="width: 160px;">Trạng thái</th>
+                                <th style="width: 150px; text-align: right;">
+                                    Công cụ
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <!-- Empty state -->
+                            <tr th:if="${#lists.isEmpty(categories)}">
+                                <td colspan="4" class="empty-state">
+                                    <i class="fa-solid fa-folder-open"></i>
+                                    Chưa có danh mục thuốc nào.
+                                </td>
+                            </tr>
+
+                            <!-- Category rows -->
+                            <tr th:each="c : ${categories}">
+
+                                <td class="table-id"
+                                    th:text="${c.id}">
+                                    1
+                                </td>
+
+                                <td>
+                                    <div class="category-name"
+                                         th:text="${c.name}">
+                                        Tên danh mục
+                                    </div>
+
+                                    <span class="category-description"
+                                          th:if="${c.description != null
+                                                  and !#strings.isEmpty(c.description)}"
+                                          th:text="${c.description}">
+                                        Mô tả danh mục
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    <span th:if="${c.status == true}"
+                                          class="badge active">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        HOẠT ĐỘNG
+                                    </span>
+
+                                    <span th:if="${c.status != true}"
+                                          class="badge inactive">
+                                        <i class="fa-solid fa-circle-pause"></i>
+                                        TẠM TẮT
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    <div class="action-group">
+
+                                        <!-- Edit -->
+                                        <a th:href="@{/admin/categories/edit/{id}(id=${c.id})}"
+                                           class="btn-action btn-edit"
+                                           title="Chỉnh sửa">
+
+                                            <i class="fa-solid fa-pen"></i>
+
+                                        </a>
+
+                                        <!-- Toggle status -->
+                                        <form th:action="@{/admin/categories/toggle/{id}(id=${c.id})}"
+                                              method="post"
+                                              class="action-form">
+
+                                            <button type="submit"
+                                                    class="btn-action btn-toggle"
+                                                    th:title="${c.status == true}
+                                                        ? 'Tạm tắt danh mục'
+                                                        : 'Kích hoạt danh mục'">
+
+                                                <i class="fa-solid"
+                                                   th:classappend="${c.status == true}
+                                                        ? ' fa-toggle-on'
+                                                        : ' fa-toggle-off'">
+                                                </i>
+
+                                            </button>
+
+                                        </form>
+
+                                        <!-- Deactivate -->
+                                        <form th:action="@{/admin/categories/delete/{id}(id=${c.id})}"
+                                              method="post"
+                                              class="action-form"
+                                              onsubmit="return confirm('Bạn có chắc muốn tạm tắt danh mục này?')">
+
+                                            <button type="submit"
+                                                    class="btn-action btn-delete"
+                                                    title="Tạm tắt danh mục">
+
+                                                <i class="fa-solid fa-ban"></i>
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+            <!-- Footer -->
+            <footer class="admin-footer">
+                <span>MedCheck Administration</span>
+                <span>© 2026 MedCheck. All rights reserved.</span>
+            </footer>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

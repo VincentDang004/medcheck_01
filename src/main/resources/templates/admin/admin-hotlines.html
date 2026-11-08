@@ -1,0 +1,182 @@
+html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Hotlines - MedCheck Admin</title>
+
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- Sidebar dùng chung -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('hotlines')}"></aside>
+
+    <main class="admin-main">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div>
+                <p class="breadcrumb">Quản trị hệ thống / Hotlines</p>
+                <h1>Quản lý đường dây nóng</h1>
+            </div>
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+                Hệ thống hoạt động
+            </div>
+        </header>
+
+        <!-- Main content -->
+        <section class="page-content">
+
+            <div class="page-heading">
+                <div>
+                    <h2>Danh sách đường dây nóng</h2>
+                    <p>Quản lý thông tin liên hệ và trạng thái hiển thị của các hotline.</p>
+                </div>
+
+                <a th:href="@{/admin/hotlines/add}" class="btn-add">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm hotline
+                </a>
+            </div>
+
+            <div class="table-card">
+                <div class="table-responsive">
+
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Thứ tự</th>
+                                <th>Thông tin hotline</th>
+                                <th>Trạng thái</th>
+                                <th style="text-align: right;">Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr th:each="h : ${hotlines}">
+
+                                <!-- Display order -->
+                                <td class="table-id"
+                                    th:text="${h.displayOrder != null ? h.displayOrder : '-'}">
+                                </td>
+
+                                <!-- Hotline information -->
+                                <td>
+                                    <div class="hotline-info">
+
+                                        <div class="hotline-icon">
+                                            <i class="fa-solid fa-phone"></i>
+                                        </div>
+
+                                        <div class="hotline-details">
+                                            <div class="hotline-name"
+                                                th:text="${h.name}">
+                                            </div>
+
+                                            <div class="hotline-phone"
+                                                th:text="${h.phone}">
+                                            </div>
+
+                                            <p class="hotline-description"
+                                                th:if="${h.description != null and !#strings.isEmpty(h.description)}"
+                                                th:text="${h.description}">
+                                            </p>
+
+                                            <span class="hotline-meta"
+                                                th:text="${(h.organization != null ? h.organization : '') + (h.region != null ? ' • ' + h.region : '')}">
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                </td>
+
+                                <!-- Status -->
+                                <td>
+                                    <span th:if="${h.status}"
+                                        class="badge active">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        Đang hiển thị
+                                    </span>
+
+                                    <span th:unless="${h.status}"
+                                        class="badge inactive">
+                                        <i class="fa-solid fa-eye-slash"></i>
+                                        Đang ẩn
+                                    </span>
+                                </td>
+
+                                <!-- Actions -->
+                                <td>
+                                    <div class="action-group">
+
+                                        <a th:href="@{/admin/hotlines/edit/{id}(id=${h.id})}"
+                                            class="btn-action btn-edit"
+                                            title="Chỉnh sửa">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+
+                                        <form th:action="@{/admin/hotlines/toggle/{id}(id=${h.id})}"
+                                            method="post"
+                                            class="action-form">
+
+                                            <button type="submit"
+                                                class="btn-action btn-toggle"
+                                                th:title="${h.status} ? 'Ẩn hotline' : 'Hiển thị hotline'">
+
+                                                <i class="fa-solid"
+                                                    th:classappend="${h.status} ? ' fa-toggle-on' : ' fa-toggle-off'">
+                                                </i>
+                                            </button>
+                                        </form>
+
+                                        <form th:action="@{/admin/hotlines/delete/{id}(id=${h.id})}"
+                                            method="post"
+                                            class="action-form"
+                                            onsubmit="return confirm('Bạn có chắc muốn ẩn hotline này?')">
+
+                                            <button type="submit"
+                                                class="btn-action btn-delete"
+                                                title="Ẩn hotline">
+                                                <i class="fa-solid fa-eye-slash"></i>
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            <!-- Empty state -->
+                            <tr th:if="${#lists.isEmpty(hotlines)}">
+                                <td colspan="4" class="empty-state">
+                                    <i class="fa-solid fa-phone-slash"></i>
+                                    <p>Chưa có đường dây nóng nào.</p>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+</body>
+</html>

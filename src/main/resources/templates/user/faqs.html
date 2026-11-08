@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câu hỏi thường gặp - MedCheck</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/user.css}">
+    <link rel="stylesheet" th:href="@{/css/user-pages.css}">
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="header-container">
+        <a href="/" class="brand">
+            <span class="brand-icon"><i class="fa-solid fa-shield-heart"></i></span>
+            <span>Med<span>Check</span></span>
+        </a>
+
+        <nav class="main-nav">
+            <a href="/" class="nav-link">Trang chủ</a>
+            <a href="/categories" class="nav-link">Danh mục</a>
+            <a href="/alerts" class="nav-link">Cảnh báo</a>
+            <a href="/hotlines" class="nav-link">Đường dây nóng</a>
+            <a href="/faqs" class="nav-link active">FAQs</a>
+
+            <a th:if="${#authorization.expression('hasAuthority(''USER'')')}"
+               href="/report-new" class="nav-link">Báo cáo thuốc</a>
+
+            <a th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
+               href="/admin/dashboard" class="nav-link admin-link">
+                <i class="fa-solid fa-user-shield"></i> Quản trị
+            </a>
+        </nav>
+
+        <div class="header-actions">
+            <div th:if="${#authorization.expression('!isAuthenticated()')}"
+                 class="guest-actions">
+                <a href="/login" class="login-link">Đăng nhập</a>
+                <a href="/register" class="register-button">Đăng ký</a>
+            </div>
+
+            <div th:if="${#authorization.expression('isAuthenticated()')}"
+                 class="user-actions">
+                <span class="user-greeting">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span th:text="${#authentication.name}"></span>
+                </span>
+                <a href="/logout" class="logout-button" title="Đăng xuất">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="page-container">
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-eyebrow">
+                <i class="fa-solid fa-circle-question"></i>
+                TRUNG TÂM HỖ TRỢ
+            </div>
+
+            <h1>Câu hỏi thường gặp</h1>
+
+            <p>
+                Tìm câu trả lời cho những thắc mắc về cách tra cứu thông tin thuốc,
+                gửi báo cáo và sử dụng các chức năng trên hệ thống MedCheck.
+            </p>
+        </div>
+
+        <div class="page-hero-icon">
+            <i class="fa-solid fa-comments"></i>
+        </div>
+    </section>
+
+    <section class="page-section">
+
+        <div class="page-section-heading">
+            <div>
+                <h2>Giải đáp thắc mắc</h2>
+                <p>Chọn từng câu hỏi để xem nội dung trả lời.</p>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(faqs)}" class="page-empty">
+            <div class="page-empty-icon">
+                <i class="fa-solid fa-circle-question"></i>
+            </div>
+            <h3>Chưa có câu hỏi nào</h3>
+            <p>Nội dung giải đáp sẽ được cập nhật tại đây.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(faqs)}" class="faq-list">
+
+            <details class="faq-item" th:each="f : ${faqs}">
+                <summary class="faq-question">
+
+                    <span class="faq-question-text">
+                        <span class="faq-question-icon">
+                            <i class="fa-solid fa-question"></i>
+                        </span>
+
+                        <span th:text="${f.question}">
+                            Nội dung câu hỏi
+                        </span>
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down faq-chevron"></i>
+                </summary>
+
+                <div class="faq-answer" th:text="${f.answer}">
+                    Nội dung câu trả lời
+                </div>
+            </details>
+
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

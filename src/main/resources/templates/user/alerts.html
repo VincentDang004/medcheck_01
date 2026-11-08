@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cảnh báo thuốc - MedCheck</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/user.css}">
+    <link rel="stylesheet" th:href="@{/css/user-pages.css}">
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="header-container">
+        <a href="/" class="brand">
+            <span class="brand-icon"><i class="fa-solid fa-shield-heart"></i></span>
+            <span>Med<span>Check</span></span>
+        </a>
+
+        <nav class="main-nav">
+            <a href="/" class="nav-link">Trang chủ</a>
+            <a href="/categories" class="nav-link">Danh mục</a>
+            <a href="/alerts" class="nav-link active">Cảnh báo</a>
+            <a href="/hotlines" class="nav-link">Đường dây nóng</a>
+            <a href="/faqs" class="nav-link">FAQs</a>
+
+            <a th:if="${#authorization.expression('hasAuthority(''USER'')')}"
+               href="/report-new" class="nav-link">Báo cáo thuốc</a>
+
+            <a th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
+               href="/admin/dashboard" class="nav-link admin-link">
+                <i class="fa-solid fa-user-shield"></i> Quản trị
+            </a>
+        </nav>
+
+        <div class="header-actions">
+            <div th:if="${#authorization.expression('!isAuthenticated()')}"
+                 class="guest-actions">
+                <a href="/login" class="login-link">Đăng nhập</a>
+                <a href="/register" class="register-button">Đăng ký</a>
+            </div>
+
+            <div th:if="${#authorization.expression('isAuthenticated()')}"
+                 class="user-actions">
+                <span class="user-greeting">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span th:text="${#authentication.name}"></span>
+                </span>
+                <a href="/logout" class="logout-button" title="Đăng xuất">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="page-container">
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-eyebrow">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                THÔNG TIN AN TOÀN THUỐC
+            </div>
+
+            <h1>Trung tâm cảnh báo thuốc</h1>
+
+            <p>
+                Danh sách các trường hợp thuốc được xác minh có dấu hiệu giả mạo
+                thông qua báo cáo cộng đồng và quá trình kiểm duyệt của quản trị viên.
+            </p>
+        </div>
+
+        <div class="page-hero-icon">
+            <i class="fa-solid fa-shield-virus"></i>
+        </div>
+    </section>
+
+    <section class="alert-intro">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <div>
+            <strong>Lưu ý khi tham khảo thông tin</strong>
+            <p>
+                Các thông tin dưới đây là những trường hợp đã được xác minh
+                trên hệ thống MedCheck. Người dùng nên kiểm tra kỹ nguồn gốc,
+                bao bì và thông tin sản phẩm; liên hệ cơ quan chuyên môn khi cần thiết.
+            </p>
+        </div>
+    </section>
+
+    <section class="page-section">
+        <div class="page-section-heading">
+            <div>
+                <h2>Danh sách thuốc đã xác minh</h2>
+                <p>Các cảnh báo đã được quản trị viên xác thực.</p>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(reports)}" class="page-empty">
+            <div class="page-empty-icon">
+                <i class="fa-solid fa-shield-heart"></i>
+            </div>
+            <h3>Chưa có cảnh báo được xác minh</h3>
+            <p>Hiện tại hệ thống chưa ghi nhận trường hợp nào trong danh sách này.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(reports)}" class="alert-list">
+            <article th:each="r : ${reports}" class="alert-item">
+
+                <div class="alert-item-top">
+                    <h3 class="alert-medicine-name" th:text="${r.medicineName}">
+                        Tên thuốc
+                    </h3>
+
+                    <span class="alert-status">
+                        <i class="fa-solid fa-circle-check"></i>
+                        Đã xác minh
+                    </span>
+                </div>
+
+                <div class="alert-reason">
+                    <strong>Lý do cảnh báo</strong>
+                    <span th:text="${r.reason}"></span>
+                </div>
+
+                <div class="alert-meta">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Thông tin đã được quản trị viên xác thực
+                </div>
+
+            </article>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

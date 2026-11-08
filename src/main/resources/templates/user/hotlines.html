@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đường dây nóng - MedCheck</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/user.css}">
+    <link rel="stylesheet" th:href="@{/css/user-pages.css}">
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="header-container">
+        <a href="/" class="brand">
+            <span class="brand-icon"><i class="fa-solid fa-shield-heart"></i></span>
+            <span>Med<span>Check</span></span>
+        </a>
+
+        <nav class="main-nav">
+            <a href="/" class="nav-link">Trang chủ</a>
+            <a href="/categories" class="nav-link">Danh mục</a>
+            <a href="/alerts" class="nav-link">Cảnh báo</a>
+            <a href="/hotlines" class="nav-link active">Đường dây nóng</a>
+            <a href="/faqs" class="nav-link">FAQs</a>
+
+            <a th:if="${#authorization.expression('hasAuthority(''USER'')')}"
+               href="/report-new" class="nav-link">Báo cáo thuốc</a>
+
+            <a th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
+               href="/admin/dashboard" class="nav-link admin-link">
+                <i class="fa-solid fa-user-shield"></i> Quản trị
+            </a>
+        </nav>
+
+        <div class="header-actions">
+            <div th:if="${#authorization.expression('!isAuthenticated()')}"
+                 class="guest-actions">
+                <a href="/login" class="login-link">Đăng nhập</a>
+                <a href="/register" class="register-button">Đăng ký</a>
+            </div>
+
+            <div th:if="${#authorization.expression('isAuthenticated()')}"
+                 class="user-actions">
+                <span class="user-greeting">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span th:text="${#authentication.name}"></span>
+                </span>
+                <a href="/logout" class="logout-button" title="Đăng xuất">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="page-container">
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <div class="page-eyebrow">
+                <i class="fa-solid fa-phone-volume"></i>
+                HỖ TRỢ KHẨN CẤP
+            </div>
+
+            <h1>Đường dây nóng</h1>
+
+            <p>
+                Danh sách các số điện thoại hỗ trợ quan trọng giúp bạn
+                liên hệ với đơn vị phù hợp khi cần trợ giúp.
+            </p>
+        </div>
+
+        <div class="page-hero-icon">
+            <i class="fa-solid fa-headset"></i>
+        </div>
+    </section>
+
+    <section class="hotline-tip">
+        <i class="fa-solid fa-heart-pulse"></i>
+        <div>
+            <strong>Hướng dẫn trong tình huống khẩn cấp</strong>
+            <p>
+                Nếu bạn hoặc người xung quanh đang gặp nguy hiểm đến tính mạng,
+                hãy liên hệ dịch vụ cấp cứu phù hợp ngay lập tức.
+                Cung cấp chính xác vị trí, tình trạng và số điện thoại liên hệ.
+            </p>
+        </div>
+    </section>
+
+    <section class="page-section">
+
+        <div class="page-section-heading">
+            <div>
+                <h2>Danh sách liên hệ</h2>
+                <p>Chọn số điện thoại phù hợp để liên hệ trực tiếp.</p>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(hotlines)}" class="page-empty">
+            <div class="page-empty-icon">
+                <i class="fa-solid fa-phone-slash"></i>
+            </div>
+            <h3>Chưa có dữ liệu đường dây nóng</h3>
+            <p>Thông tin liên hệ hiện chưa được cập nhật trên hệ thống.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(hotlines)}" class="hotline-grid">
+
+            <article class="hotline-card" th:each="h : ${hotlines}">
+
+                <div class="hotline-card-top">
+                    <div>
+                        <h3 class="hotline-name" th:text="${h.name}">
+                            Tên đường dây nóng
+                        </h3>
+
+                        <div class="hotline-region"
+                             th:text="${h.region != null ? h.region : 'Toàn quốc'}">
+                            Toàn quốc
+                        </div>
+                    </div>
+
+                    <div class="hotline-number" th:text="${h.phone}">
+                        115
+                    </div>
+                </div>
+
+                <div class="hotline-description"
+                     th:text="${h.description != null ? h.description : ''}">
+                </div>
+
+                <div class="hotline-organization"
+                     th:if="${h.organization != null and !#strings.isEmpty(h.organization)}"
+                     th:text="${h.organization}">
+                </div>
+
+                <div class="hotline-actions">
+                    <a class="hotline-call"
+                       th:href="${'tel:' + h.phone}">
+                        <i class="fa-solid fa-phone"></i>
+                        Gọi ngay
+                    </a>
+
+                    <a class="hotline-website"
+                       th:if="${h.websiteUrl != null and !#strings.isEmpty(h.websiteUrl)}"
+                       th:href="${h.websiteUrl}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        Website
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+            </article>
+
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Báo cáo thuốc giả</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7fb; padding: 50px; }
+        .form-card { background: white; max-width: 500px; margin: auto; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+        h2 { color: #dc2626; text-align: center; }
+        .group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        .btn-submit { width: 100%; padding: 12px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .notice { background: #fef2f2; color: #b91c1c; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+    </style>
+</head>
+
+<body>
+    <div class="form-card">
+        <h2>Báo cáo nghi vấn thuốc giả</h2>
+
+        <div th:if="${param.blocked}" class="notice">
+            Tài khoản của bạn đã bị khóa, không thể gửi thêm báo cáo.
+        </div>
+
+        <form th:action="@{/report/submit}" method="post">
+            <input type="hidden" name="medicineId" th:value="${medicine.id}">
+
+            <div class="group">
+                <label>Tên loại thuốc:</label>
+                <input type="text" name="medicineName" th:value="${medicine.name}" placeholder="Nhập tên thuốc bạn nghi ngờ..." required>
+            </div>
+
+            <div class="group">
+                <label>Lý do nghi ngờ:</label>
+                <textarea name="reason" rows="4" placeholder="Ví dụ: Bao bì lạ, chữ in mờ..." required></textarea>
+            </div>
+
+            <div class="group">
+                <label>Thông tin liên hệ (SĐT/Email):</label>
+                <input type="text" name="contactInfo" placeholder="Để chúng tôi phản hồi cho bạn" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Gửi báo cáo ngay</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="/" style="color: #666; text-decoration: none; font-size: 14px;">Hủy bỏ và quay lại</a>
+        </div>
+    </div>
+</body>
+
+</html>

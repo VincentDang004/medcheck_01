@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<aside class="admin-sidebar" th:fragment="sidebar(activePage)">
+
+    <!-- Brand -->
+    <a href="/admin/dashboard" class="brand">
+        <span class="brand-icon">
+            <i class="fa-solid fa-shield-heart"></i>
+        </span>
+
+        <span>
+            <strong>MedCheck</strong>
+            <small>ADMINISTRATION</small>
+        </span>
+    </a>
+
+    <!-- Navigation -->
+    <div class="sidebar-section">
+        <span class="sidebar-label">QUẢN LÝ HỆ THỐNG</span>
+
+        <nav class="sidebar-nav">
+
+            <a href="/admin/dashboard"
+               th:classappend="${activePage == 'dashboard'} ? ' active' : ''">
+                <i class="fa-solid fa-grip"></i>
+                <span>Tổng quan</span>
+            </a>
+
+            <a href="/admin/medicines"
+               th:classappend="${activePage == 'medicines'} ? ' active' : ''">
+                <i class="fa-solid fa-pills"></i>
+                <span>Quản lý thuốc</span>
+            </a>
+
+            <a href="/admin/categories"
+               th:classappend="${activePage == 'categories'} ? ' active' : ''">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Danh mục thuốc</span>
+            </a>
+
+            <a href="/admin/hotlines"
+               th:classappend="${activePage == 'hotlines'} ? ' active' : ''">
+                <i class="fa-solid fa-phone"></i>
+                <span>Hotlines</span>
+            </a>
+
+            <a href="/admin/faqs"
+               th:classappend="${activePage == 'faqs'} ? ' active' : ''">
+                <i class="fa-solid fa-circle-question"></i>
+                <span>FAQs</span>
+            </a>
+
+            <a href="/admin/reports"
+               th:classappend="${activePage == 'reports'} ? ' active' : ''">
+                <i class="fa-solid fa-flag"></i>
+                <span>Duyệt báo cáo</span>
+            </a>
+
+            <a href="/admin/users"
+               th:classappend="${activePage == 'users'} ? ' active' : ''">
+                <i class="fa-solid fa-users"></i>
+                <span>Quản lý người dùng</span>
+            </a>
+
+        </nav>
+    </div>
+
+    <!-- Bottom -->
+    <div class="sidebar-bottom">
+
+        <div class="sidebar-user">
+            <div class="user-avatar">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+
+            <div class="user-info">
+                <strong>Quản trị viên</strong>
+                <small>Administrator</small>
+            </div>
+        </div>
+
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Đăng xuất</span>
+            </button>
+        </form>
+
+    </div>
+
+</aside>
+
+</body>
+</html>
